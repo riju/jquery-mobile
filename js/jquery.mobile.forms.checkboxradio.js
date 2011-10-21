@@ -71,18 +71,10 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 				}
 
 				self._cacheVals();
-
-				input.prop( "checked", inputtype === "radio" && true || !input.prop( "checked" ) );
-
-				// Input set for common radio buttons will contain all the radio
-				// buttons, but will not for checkboxes. clearing the checked status
-				// of other radios ensures the active button state is applied properly
-				self._getInputSet().not( input ).prop( "checked", false );
-
+				input.trigger( 'click' );
 				self._updateAll();
 				return false;
 			}
-
 		});
 
 		input
@@ -92,7 +84,6 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 				},
 
 				vclick: function() {
-
 					var $this = $(this);
 
 					// Adds checked attribute to checked input when keyboard is used
