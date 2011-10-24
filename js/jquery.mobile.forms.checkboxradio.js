@@ -12,6 +12,7 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 		theme: null,
 		initSelector: "input[type='checkbox'],input[type='radio']"
 	},
+
 	_create: function() {
 		var self = this,
 			input = this.element,
@@ -71,7 +72,12 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 				}
 
 				self._cacheVals();
-				input.trigger( 'click' );
+
+				// here we trigger the click so user's who have binding on the input can be
+				// notified of the click instead of having to bind to two places. note that it
+				// also prevents the execution of the vclick handler since it will be fired before
+				// the checked property of the input is changed and is usesless as a result
+				input.trigger( 'click', [{labelClick: true}] );
 				self._updateAll();
 				return false;
 			}
@@ -80,19 +86,21 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 		input
 			.bind({
 				vmousedown: function() {
-					this._cacheVals();
+					self._cacheVals();
 				},
 
-				vclick: function() {
+				vclick: function( event, opts ) {
+					if( opts.labelClick ) {
+						return;
+					}
+
 					var $this = $(this);
 
 					// Adds checked attribute to checked input when keyboard is used
 					if ( $this.is( ":checked" ) ) {
-
 						$this.prop( "checked", true);
 						self._getInputSet().not($this).prop( "checked", false );
 					} else {
-
 						$this.prop( "checked", false );
 					}
 
@@ -155,7 +163,6 @@ $.widget( "mobile.checkboxradio", $.mobile.widget, {
 			icon.addClass( this.checkedicon ).removeClass( this.uncheckedicon );
 
 		} else {
-
 			label.removeClass( this.checkedClass ).addClass( this.uncheckedClass );
 			icon.removeClass( this.checkedicon ).addClass( this.uncheckedicon );
 		}
