@@ -169,7 +169,7 @@ function clearResetTimer() {
 	}
 }
 
-function triggerVirtualEvent( eventType, event, flags ) {
+function triggerVirtualEvent( eventType, event, flags, passedArgs ) {
 	var ve;
 
 	if ( ( flags && flags[ eventType ] ) ||
@@ -177,17 +177,18 @@ function triggerVirtualEvent( eventType, event, flags ) {
 
 		ve = createVirtualEvent( event, eventType );
 
-		$( event.target).trigger( ve );
+		$( event.target).trigger( ve, passedArgs );
 	}
 
 	return ve;
 }
 
 function mouseEventCallback( event ) {
-	var touchID = $.data(event.target, touchTargetPropertyName);
+	var touchID = $.data(event.target, touchTargetPropertyName),
+		passedArgs = Array.prototype.slice.call(arguments, 1) || [];
 
 	if ( !blockMouseTriggers && ( !lastTouchID || lastTouchID !== touchID ) ){
-		var ve = triggerVirtualEvent( "v" + event.type, event );
+		var ve = triggerVirtualEvent( "v" + event.type, event, false, passedArgs );
 		if ( ve ) {
 			if ( ve.isDefaultPrevented() ) {
 				event.preventDefault();
